@@ -16,9 +16,11 @@ index.html
 register.html
 CSS/
 3. Define the below listed functionalities.
+
 register.html
 create a form with id 'registration-form' and define three input fields inside it with name field as 'fullname', 'username', 'password' and a register button.
 the form should submit to url 'http://localhost:8080/register' along with the registration details.
+
 login.html
 
 create a form with id 'login-form' and define two input fields inside it with name field as 'username', 'password' and a login button.
