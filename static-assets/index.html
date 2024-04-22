@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <!-- Tweet Box -->
+    <div>
+        <input type="text" id="tweet-input" placeholder="Write your tweet...">
+        <button id="tweet-button">Tweet</button>
+    </div>
+
+    <!-- Posts Container -->
+    <div id="posts-container"></div>
+
+    <form id="search-form">
+      <input type="text" id="search-input" name="searchText" placeholder="Search">
+      <button type="submit" id="search-button">Search</button>
+  </form>
+ 
+    <!-- Search Results Container -->
+    <div id="search-container"></div>
+
+    <script>
+        // Function to fetch and display posts
+        function fetchPosts() {
+            fetch('http://localhost:8080/dbrestapi/getposts', {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch posts');
+                }
+                return response.json();
+            })
+            .then(posts => {
+                console.log('Fetched Posts:', posts);
+
+
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = ''; // Clear previous posts
+
+                posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.innerHTML = `
+                        <p><strong>Post ID:</strong> ${post.postId}</p>
+                        <p><strong>Post Body:</strong> ${post.postBody}</p>
+                        <p><strong>Post Date:</strong> ${post.postDate}</p>
+                        <hr>
+                    `;
+                    postsContainer.appendChild(postElement);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching posts:', error);
+                // Handle error condition, e.g., display an error message
+            });
+        }
+
+
+    // Call fetchPosts() when the page loads
+    document.addEventListener('DOMContentLoaded', fetchPosts);
+
+
+    document.getElementById('search-form').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    const searchText = document.getElementById('search-input').value;
+
+    // Create FormData object and append form data
+    const formData = new FormData();
+    formData.append('searchText', searchText);
+
+
+    // Send form data to the server using fetch
+    fetch('http://localhost:8080/dbrestapi/searchuser', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to search users');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Handle the response from the server
+        console.log(data);
+
+
+        // Display the response in the search container
+        const searchContainer = document.getElementById('search-container');
+        searchContainer.innerHTML = ''; // Clear previous search results
+
+
+        // Iterate over the response data and display it in the search container
+        for (const user in data) {
+            const userElement = document.createElement('div');
+            userElement.textContent = user;
+            searchContainer.appendChild(userElement);
+        }
+    })
+    .catch(error => {
+        console.error('Error searching users:', error);
+        // Handle error condition
+    });
+});
+    </script>
+</body>
+</html>
